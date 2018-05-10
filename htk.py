@@ -1,26 +1,3 @@
-# -*- coding: utf-8 -*-
-#
-# 3Play Media: Cambridge, MA, USA
-# support@3playmedia.com
-#
-# Copyright (c) 2012 3Play Media, Inc.  The following software is the sole and
-# exclusive property of 3Play Media, Inc. and may not to be reproduced,
-# modified, distributed or otherwise used, without the written approval
-# of 3Play Media, Inc.
-#
-# This software is provided "as is" and any express or implied
-# warranties, including but not limited to, an implied warranty of
-# merchantability and fitness for a particular purpose are disclaimed.
-#
-# In no event shall 3Play Media, Inc. be liable for any direct,
-# indirect, incidental, special, exemplary, or consequential damages
-# (including but not limited to, procurement or substitute goods or
-# services, loss of use, data or profits, or business interruption)
-# however caused and on any theory of liability, whether in contract,
-# strict liability, or tort (including negligence or otherwise) arising
-# in any way out of the use of this software, even if advised of the
-# possibility of such damage.
-
 import struct
 import numpy as np
 

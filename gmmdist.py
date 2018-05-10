@@ -1,27 +1,3 @@
-# -*- coding: utf-8 -*-
-#
-# 3Play Media: Cambridge, MA, USA
-# support@3playmedia.com
-#
-# Copyright (c) 2012 3Play Media, Inc.  The following software is the sole and
-# exclusive property of 3Play Media, Inc. and may not to be reproduced,
-# modified, distributed or otherwise used, without the written approval
-# of 3Play Media, Inc.
-#
-# This software is provided "as is" and any express or implied
-# warranties, including but not limited to, an implied warranty of
-# merchantability and fitness for a particular purpose are disclaimed.
-#
-# In no event shall 3Play Media, Inc. be liable for any direct,
-# indirect, incidental, special, exemplary, or consequential damages
-# (including but not limited to, procurement or substitute goods or
-# services, loss of use, data or profits, or business interruption)
-# however caused and on any theory of liability, whether in contract,
-# strict liability, or tort (including negligence or otherwise) arising
-# in any way out of the use of this software, even if advised of the
-# possibility of such damage.
-
-
 import numpy as np
 from threepy.signal import sigproc
 import sys
@@ -103,7 +79,7 @@ class GMM:
 	def score_model(self,d,p=None):
 		"""Score the specified distribution
 		This is just the average Euclidian distance between the distribution values
-		Note that kl-divergence would be terrible, since the empirical distribution may 
+		Note that kl-divergence would be terrible, since the empirical distribution may
 		very well contain zeros
 		TODO: weighted probability sums over the sampled space?
 		"""
@@ -153,5 +129,3 @@ def _log_mv_gaussian_diag(X,means,covars):
 	X = X[...,None,:]
 	lpr = -0.5 * (n_dim * np.log(2 * np.pi) + np.log(covars).sum(-1) + np.sum((X - means) * (X - means) / covars, axis=-1))
 	return lpr
-
-
