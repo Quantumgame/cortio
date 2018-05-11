@@ -1,9 +1,9 @@
 import numpy as np
 import wave
-import threepy.signal.sigproc as sigproc
-import threepy.signal.audioproc as audioproc
-import threepy.nonspeech.cortical as cortical
-import threepy.nonspeech.gmmdist as gmmdist
+import sigproc as sigproc
+import audioproc as audioproc
+import cortical as cortical
+import gmmdist as gmmdist
 
 def compute_features(chunk,fs,features='cortical',method='moments'):
 	if features=='mfcc':

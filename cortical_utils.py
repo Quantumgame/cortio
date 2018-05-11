@@ -5,8 +5,8 @@ import math
 import matplotlib.pyplot as plot
 import matplotlib.animation as animation
 import mpl_toolkits.mplot3d.axes3d as axes3d
-import threepy.nonspeech.features as Features
-import threepy.signal.audiostream as AudioStream
+import features as Features
+import audiostream as AudioStream
 import time
 import sys
 
