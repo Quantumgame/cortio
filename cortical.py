@@ -72,7 +72,7 @@ def filter(specgram, rates=[1, 2, 4, 8, 16, 32], scales=[0.5, 1, 2, 4, 8], fl=8,
             else:
                 HR = np.hstack( (HR[0], np.conj(HR[N2:0:-1])) )
                 if N2 > 2:
-                	HR[N1] = np.abs(HR[N1+1])
+                    HR[N1] = np.abs(HR[N1+1])
 
             # first inverse fft (w.r.t. time axis)
             z1 = HR[:,None] * Y

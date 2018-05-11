@@ -16,25 +16,25 @@ def preemphasis(signal,coeff=0.95):
     return np.append(signal[0],signal[1:]-coeff*signal[:-1])
 
 def detect_activity(energy,threshold = -70):
-	"""Detect activity in an audio signal.
-	Input param energy is computed from frames, here we simply threshold it
-	"""
-	activity = 20*np.log10(energy) > threshold
-	return activity
+    """Detect activity in an audio signal.
+    Input param energy is computed from frames, here we simply threshold it
+    """
+    activity = 20*np.log10(energy) > threshold
+    return activity
 
 def deltas(coefs, N=2):
-	"""Compute deltas from MFCC coeffs, or delta-deltas from deltas.
-	"""
-	K = len(coefs)
-	deltas = np.zeros(coefs.shape)
-	for n in np.arange(1,N+1):
-		ind_plus = np.arange(1,K+1) + n
-		ind_plus[ind_plus >=K] = K-1
-		ind_minus = np.arange(1,K+1) - n
-		ind_plus[ind_plus <0] = 0
-		deltas = deltas + coefs[ind_plus] - coefs[ind_minus]
-	deltas /= (2 * sum(np.arange(1,N+1)**2))
-	return deltas
+    """Compute deltas from MFCC coeffs, or delta-deltas from deltas.
+    """
+    K = len(coefs)
+    deltas = np.zeros(coefs.shape)
+    for n in np.arange(1,N+1):
+        ind_plus = np.arange(1,K+1) + n
+        ind_plus[ind_plus >=K] = K-1
+        ind_minus = np.arange(1,K+1) - n
+        ind_plus[ind_plus <0] = 0
+        deltas = deltas + coefs[ind_plus] - coefs[ind_minus]
+    deltas /= (2 * sum(np.arange(1,N+1)**2))
+    return deltas
 
 # # requires newer version of scipy.fftpack
 # def mfcc(signal,samplerate=16000,winlen=0.025,winstep=0.01,numcep=13,

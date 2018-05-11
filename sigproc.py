@@ -9,56 +9,56 @@ import math
 import scipy.signal.filter_design as fd
 
 def envelope(x,fs,hp=100, axis=-1):
-	Wp = 2*float(hp)/fs
-	Ws = 3*float(hp)/fs
-	Rp = 1
-	As = 50
-	b,a = fd.iirdesign(Wp, Ws, Rp, As, ftype='ellip')
-	env = sp.signal.filtfilt(b,a,np.abs(x),axis=axis)
-	return env
+    Wp = 2*float(hp)/fs
+    Ws = 3*float(hp)/fs
+    Rp = 1
+    As = 50
+    b,a = fd.iirdesign(Wp, Ws, Rp, As, ftype='ellip')
+    env = sp.signal.filtfilt(b,a,np.abs(x),axis=axis)
+    return env
 
 def moments(data, num, dim=0, normalized=False,keepdims=False):
-	"""Compute up to the num-th moment of the distribution data along specified axis (default 0)"""
-	# to make things easier, swap dim into position 0 here, then swap it back if keepDims is True
-	if dim != 0:
-		data = data.swapaxes(0,dim)
-	if not normalized:
-		data = data / data.sum(axis=0)[None,...]
-	# create support vector along (0) dim
-	xshape = np.ones(data.ndim)
-	n = data.shape[0]
-        xshape[0] = n
-        x = np.arange(n).reshape(xshape.astype(int))
-	# output shape is same as input shape, but size along dim 0 gets replaced with num_moments
-	mshape = np.array(data.shape)
-	mshape[0] = num
-	m = np.zeros(mshape)
-	# first moments are means and var
-	if num > 0:
-		m[0] = (data * x).sum(axis=0)
-	if num > 1:
-		m[1] = (data * (x - m[0])**2).sum(axis=0)
-	# beyond var, return normalized moments
-	for ii in xrange(2,num):
-		m[ii] = (data * (x - m[0])**(ii+1)).sum(axis=0) / m[1]**(float((ii+1))/2)
-	if keepdims:
-		m = m.swapaxes(0,dim)
-	return m
+    """Compute up to the num-th moment of the distribution data along specified axis (default 0)"""
+    # to make things easier, swap dim into position 0 here, then swap it back if keepDims is True
+    if dim != 0:
+        data = data.swapaxes(0,dim)
+    if not normalized:
+        data = data / data.sum(axis=0)[None,...]
+    # create support vector along (0) dim
+    xshape = np.ones(data.ndim)
+    n = data.shape[0]
+    xshape[0] = n
+    x = np.arange(n).reshape(xshape.astype(int))
+    # output shape is same as input shape, but size along dim 0 gets replaced with num_moments
+    mshape = np.array(data.shape)
+    mshape[0] = num
+    m = np.zeros(mshape)
+    # first moments are means and var
+    if num > 0:
+        m[0] = (data * x).sum(axis=0)
+    if num > 1:
+        m[1] = (data * (x - m[0])**2).sum(axis=0)
+    # beyond var, return normalized moments
+    for ii in xrange(2,num):
+        m[ii] = (data * (x - m[0])**(ii+1)).sum(axis=0) / m[1]**(float((ii+1))/2)
+    if keepdims:
+        m = m.swapaxes(0,dim)
+    return m
 
 def marginal(data, dim):
-	"""Return marginal of data, varying along dim (can be scalar or array of dims)"""
-	dims = np.array([dim]).flatten()
-	m = data
-	for d in np.arange(data.ndim-1,0-1,-1):
-		if d in dims:
-			continue
-		m = m.sum(axis=d)
-	return m
+    """Return marginal of data, varying along dim (can be scalar or array of dims)"""
+    dims = np.array([dim]).flatten()
+    m = data
+    for d in np.arange(data.ndim-1,0-1,-1):
+        if d in dims:
+            continue
+        m = m.sum(axis=d)
+    return m
 
 def index_coordinate_matrix(shape):
-	"""Generate a nd matrix of coordinate vectors"""
-	ind = [slice(0,n) for n in shape]
-	return np.mgrid[ind].transpose(np.roll(np.arange(len(shape)+1),-1))
+    """Generate a nd matrix of coordinate vectors"""
+    ind = [slice(0,n) for n in shape]
+    return np.mgrid[ind].transpose(np.roll(np.arange(len(shape)+1),-1))
 
 def framesig(sig,frame_len,frame_step,winfunc=lambda x:np.ones((1,x))):
     """Frame a signal into overlapping frames.
@@ -157,61 +157,61 @@ def logpowspec(frames,NFFT,norm=1):
         return lps
 
 def runcor(x, sig, mode='full', noise_floor=None):
-	"""Compute a running normalized correlation between a token x and a longer signal.
-	Normalization is unique to each windowed comparison.
+    """Compute a running normalized correlation between a token x and a longer signal.
+    Normalization is unique to each windowed comparison.
 
-	"""
-	N = len(x)
-	x = x - np.mean(x)
-	ym = sp.signal.convolve(sig, np.ones(N), mode=mode)/N
-	y2m = sp.signal.convolve(sig**2, np.ones(N), mode=mode)/N
-	yy = (y2m - ym**2)
-	yy[yy<0] = 0
-	denom = np.sqrt(N * np.sum(x**2) * yy)
-	if noise_floor != None: denom[denom<noise_floor] = noise_floor
-	r = sp.signal.correlate(sig, x, mode=mode) / denom
-	return r
+    """
+    N = len(x)
+    x = x - np.mean(x)
+    ym = sp.signal.convolve(sig, np.ones(N), mode=mode)/N
+    y2m = sp.signal.convolve(sig**2, np.ones(N), mode=mode)/N
+    yy = (y2m - ym**2)
+    yy[yy<0] = 0
+    denom = np.sqrt(N * np.sum(x**2) * yy)
+    if noise_floor != None: denom[denom<noise_floor] = noise_floor
+    r = sp.signal.correlate(sig, x, mode=mode) / denom
+    return r
 
 def segcor(x, sig, winlen, step=None):
-	"""Segment x into windows and do a runcor on each window into sig"""
-	if step==None: step = int(winlen/2)
-	frames = framesig(x,winlen,step)
-	N = sig.shape[-1]
-	Nx = x.shape[-1]
-	num_frames = int(math.ceil(float(Nx - winlen)/step))
-	N_out = N+winlen-1+(num_frames-1)*step
-	r = np.zeros((num_frames,N_out))
-	offset = (num_frames-1)*step
-	for ii in np.arange(num_frames):
-		r[ii,offset:offset+N+winlen-1] = runcor(frames[ii],sig)
-		offset = offset - step
-	return r
+    """Segment x into windows and do a runcor on each window into sig"""
+    if step==None: step = int(winlen/2)
+    frames = framesig(x,winlen,step)
+    N = sig.shape[-1]
+    Nx = x.shape[-1]
+    num_frames = int(math.ceil(float(Nx - winlen)/step))
+    N_out = N+winlen-1+(num_frames-1)*step
+    r = np.zeros((num_frames,N_out))
+    offset = (num_frames-1)*step
+    for ii in np.arange(num_frames):
+        r[ii,offset:offset+N+winlen-1] = runcor(frames[ii],sig)
+        offset = offset - step
+    return r
 
 def segcor_offsets(x,sig,winlen,step=None):
-	if step==None: step = int(winlen/2)
-	N = sig.shape[-1]
-	Nx = x.shape[-1]
-	num_frames = int(math.ceil(float(Nx - winlen)/step))
-	m = np.arange(-(winlen-1)-(num_frames-1)*step, N)
-	return m
+    if step==None: step = int(winlen/2)
+    N = sig.shape[-1]
+    Nx = x.shape[-1]
+    num_frames = int(math.ceil(float(Nx - winlen)/step))
+    m = np.arange(-(winlen-1)-(num_frames-1)*step, N)
+    return m
 
 def z_mean(x,axis=0,std_axis=None):
-	"""Take weighted mean of vectors, where weights are inverse stddev"""
-	#TODO: really think about zero stddev cases
-	if x.ndim==1: x = x[None,:]
-	if std_axis == None:
-		if axis == x.ndim-1 or axis == -1:
-			std_axis=-2
-		else:
-			std_axis=-1
-		#no keepdims in old numpy version
-		#stds = np.std(x,axis=std_axis,keepdims=True)
-		dimifier = [slice(None)] * x.ndim
-		dimifier[std_axis] = None
-		stds = np.std(x,axis=std_axis)[dimifier]
-	if any(stds==0):
-		min_std = min(stds);
-		if min_std == 0: min_std = 1
-		stds[stds==0] = min_std / 10
+    """Take weighted mean of vectors, where weights are inverse stddev"""
+    #TODO: really think about zero stddev cases
+    if x.ndim==1: x = x[None,:]
+    if std_axis == None:
+        if axis == x.ndim-1 or axis == -1:
+            std_axis=-2
+        else:
+            std_axis=-1
+        #no keepdims in old numpy version
+        #stds = np.std(x,axis=std_axis,keepdims=True)
+        dimifier = [slice(None)] * x.ndim
+        dimifier[std_axis] = None
+        stds = np.std(x,axis=std_axis)[dimifier]
+    if any(stds==0):
+        min_std = min(stds);
+        if min_std == 0: min_std = 1
+        stds[stds==0] = min_std / 10
 
-	return (x/stds).sum(axis=axis) / (1/stds).sum(axis=axis)
+    return (x/stds).sum(axis=axis) / (1/stds).sum(axis=axis)
