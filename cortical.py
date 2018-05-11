@@ -60,7 +60,7 @@ def filter(specgram, rates=[1, 2, 4, 8, 16, 32], scales=[0.5, 1, 2, 4, 8], fl=8,
     z  = np.zeros((N+2*dN, M+2*dM), dtype='complex128')
     cr = np.zeros((K2, K1*2, N+2*dN, M+2*dM), dtype='complex128')
 
-    for rdx in xrange(K1):
+    for rdx in range(K1):
         # rate filtering
         fc_rt = rates[rdx]
         HR = temporal_filter(fc_rt, N1, STF, [1+rdx+BP, K1+BP*2])
@@ -79,7 +79,7 @@ def filter(specgram, rates=[1, 2, 4, 8, 16, 32], scales=[0.5, 1, 2, 4, 8], fl=8,
             z1 = np.fft.ifft(z1,axis=0)
             z1 = z1[ndx1,:]
 
-            for sdx in xrange(K2):
+            for sdx in range(K2):
                 # scale filtering
                 fc_sc = scales[sdx]
                 HS = frequency_filter(fc_sc, M1, SRF, [1+sdx+BP, K2+BP*2])

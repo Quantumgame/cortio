@@ -79,7 +79,7 @@ def cor_gmm(cor):
     features = np.zeros((NT,num_components*(2*3 + 1)))
     g = gmmdist.GMM(num_components)
 
-    for n in xrange(NT):
+    for n in range(NT):
         slice = cor[:,:,n,:]
         g.fit(slice,n_iter = 20)
         features[n,:] = np.hstack((g.model['means'].flatten(),g.model['covars'].flatten(),g.model['weights']))

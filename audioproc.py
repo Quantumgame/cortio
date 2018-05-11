@@ -142,14 +142,14 @@ def ssc(signal,samplerate=16000,winlen=0.025,winstep=0.01,
     :param preemph: apply preemphasis filter with preemph as coefficient. 0 is no filter. Default is 0.97.
     :returns: A numpy array of size (NUMFRAMES by nfilt) containing features. Each row holds 1 feature vector.
     """
-    highfreq= highfreq or samplerate/2
+    highfreq= highfreq or samplerate//2
     signal = preemphasis(signal,preemph)
     frames = sigproc.framesig(signal, winlen*samplerate, winstep*samplerate)
     pspec = sigproc.powspec(frames,nfft)
 
     fb = get_filterbanks(nfilt,nfft,samplerate)
     feat = np.dot(pspec,fb.T) # compute the filterbank energies
-    R = np.tile(np.linspace(1,samplerate/2,np.size(pspec,1)),(np.size(pspec,0),1))
+    R = np.tile(np.linspace(1,samplerate//2,np.size(pspec,1)),(np.size(pspec,0),1))
 
     return np.dot(pspec*R,fb.T) / feat
 
@@ -190,11 +190,11 @@ def get_filterbanks(nfilt=20,nfft=512,samplerate=16000,lowfreq=0,highfreq=None):
     #  from Hz to fft bin number
     bin = np.floor((nfft+1)*mel2hz(melpoints)/samplerate)
 
-    fbank = np.zeros([nfilt,nfft/2+1])
-    for j in xrange(0,nfilt):
-        for i in xrange(int(bin[j]),int(bin[j+1])):
+    fbank = np.zeros([nfilt,nfft//2+1])
+    for j in range(0,nfilt):
+        for i in range(int(bin[j]),int(bin[j+1])):
             fbank[j,i] = (i - bin[j])/(bin[j+1]-bin[j])
-        for i in xrange(int(bin[j+1]),int(bin[j+2])):
+        for i in range(int(bin[j+1]),int(bin[j+2])):
             fbank[j,i] = (bin[j+2]-i)/(bin[j+2]-bin[j+1])
     return fbank
 

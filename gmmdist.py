@@ -20,7 +20,7 @@ class GMM:
         """
         means = np.zeros((self.num_components,d.ndim))
         covars = np.ones((self.num_components,d.ndim))
-        for ii in xrange(d.ndim):
+        for ii in range(d.ndim):
             means[:,ii] = np.linspace(0,d.shape[ii],self.num_components)
             covars[:,ii] = np.ones(self.num_components).astype(np.float) * np.array(d.shape[ii]).astype(np.float)/4
         weights = 1./self.num_components * np.ones(self.num_components)
@@ -38,7 +38,7 @@ class GMM:
         b = sigproc.index_coordinate_matrix(d.shape).astype(np.float)
         self.init_EM(d)
 
-        for nn in xrange(n_iter):
+        for nn in range(n_iter):
             if verbose:
                 sys.stdout.write('.')
 
@@ -46,7 +46,7 @@ class GMM:
             w = _mv_gaussian_diag(b,means=self.model['means'],covars=self.model['covars']) * self.model['weights']
             denom = w.sum(axis=-1)
             k = denom>0
-            for ii in xrange(self.num_components):
+            for ii in range(self.num_components):
                 w[...,ii][k] = w[...,ii][k]/denom[k]
                 w[...,ii][~k] = 1./self.num_components
 
@@ -58,7 +58,7 @@ class GMM:
 
             # M step
             self.model['weights'] = np.sum(w*d[...,None], axis=d_axes)
-            for ii in xrange(d.ndim):
+            for ii in range(d.ndim):
                 # collapse data to this dimension to compute means and covars
                 #TODO: test this; just fixed up the code to make it work with an earlier version of python
                 # collapse_axes = tuple(set(d_axes) - {ii})

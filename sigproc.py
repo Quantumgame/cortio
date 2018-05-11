@@ -39,7 +39,7 @@ def moments(data, num, dim=0, normalized=False,keepdims=False):
     if num > 1:
         m[1] = (data * (x - m[0])**2).sum(axis=0)
     # beyond var, return normalized moments
-    for ii in xrange(2,num):
+    for ii in range(2,num):
         m[ii] = (data * (x - m[0])**(ii+1)).sum(axis=0) / m[1]**(float((ii+1))/2)
     if keepdims:
         m = m.swapaxes(0,dim)
