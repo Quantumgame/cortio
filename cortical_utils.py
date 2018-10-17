@@ -108,11 +108,11 @@ class CubePlot:
         self.fs = None
 
         if type(x) == str:
-            self.stream = AudioStream.audiostream(x)
+            self.stream = AudioStream.AudioStream(x)
             self.fs = self.stream.fs
         else:
             if fs == None: raise Exception, "Must provide sample frequency for audio"
-            self.stream = AudioStream.virtualstream(x,fs)
+            self.stream = AudioStream.VirtualStream(x,fs)
             self.fs = fs
 
         #hacky to get the correct shape

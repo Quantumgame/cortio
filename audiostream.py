@@ -1,7 +1,7 @@
 import wave
 import numpy as np
 
-class audiostream:
+class AudioStream:
     """Stream audio from a file in chunks"""
     def __init__(self, file, chunk_size=10.0):
         self.audiofile = wave.open(file)
@@ -39,7 +39,7 @@ class audiostream:
     def close(self):
         self.audiofile.close()
 
-class virtualstream:
+class VirtualStream:
     """Virtual AudioStream class for audio data in memory"""
     def __init__(self,x,fs,chunk_size=10.0):
         self.x = x
