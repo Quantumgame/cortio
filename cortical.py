@@ -31,6 +31,8 @@ def filter(specgram, rates=[1, 2, 4, 8, 16, 32], scales=[0.5, 1, 2, 4, 8], fl=8,
     the size to 1/4, which will also reduce runing time
     to half.
     See also: WAV2AUD, COR_INFO, CORHEADR, COR_RST
+
+    Output dims: [scale, rate, time, freq]
     """
 
     K1 = len(rates)
