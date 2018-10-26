@@ -12,7 +12,7 @@ fi
 soxi "$input" | grep -i duration | perl -ne '/(\d+\s*samples)/i && print STDERR "Total duration: $1\n"'
 
 python <<-PROGRAM
-import cortical_utils as Utils
+import cortio.cortical_utils as Utils
 cp = Utils.CubePlot('$input')
 cp.write_movie('$output')
 PROGRAM
