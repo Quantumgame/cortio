@@ -1,6 +1,30 @@
-# - some functions adapted from gen_cort.m by Powen Ru (powen@isr.umd.edu), NSL, UMD
-
 import numpy as np
+import audioproc
+
+def wav2cor(wav,fs):
+    return aud2cor(wav2aud(wav,fs)[0])
+
+def wav2aud(wav, fs):
+    (X, energy) = audioproc.db_fbank(wav,samplerate=fs,nfilt=128, nfft=1024,winstep=0.01,winlen=0.025)
+    # offset to set 0 to mean nothing
+    X = X + 150
+    X[X<0] = 0
+    # apply window
+    fade=20
+    win = np.ones((1,X.shape[1]))
+    win[0,0:fade] = (1+np.arange(fade).astype(np.float))/fade
+    win[0,-fade:] = (1+np.arange(fade).astype(np.float)[::-1])/fade
+    X = X * win
+
+    return(X,energy)
+
+def aud2cor(aud, fl=10, bp=1):
+    cor = filter(aud,BP=bp,fl=fl)
+    #collapse +/- rates
+    nr = cor.shape[1]
+    cor = np.abs(cor[:,0:nr/2,:,:]) + np.abs(cor[:,nr/2:nr,:,:])
+    return cor #np.abs(cor)
+
 
 def filter(specgram, rates=[1, 2, 4, 8, 16, 32], scales=[0.5, 1, 2, 4, 8], fl=8, tc=8, fac=-2, shift=0, full_T=0, full_X=0, BP=0):
     """

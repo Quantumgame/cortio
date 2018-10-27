@@ -5,7 +5,7 @@ import matplotlib.animation as animation
 import mpl_toolkits.mplot3d.axes3d as axes3d
 
 from ..io import audiostream as AudioStream
-from .. import features as Features
+from ..signal import cortical as cortical
 
 # TODO: put this somewhere else
 def cube_marginals(cube, normalize=False):
@@ -60,8 +60,8 @@ class CubePlot:
                 yield (xy[:,:,ii],xz[:,:,ii],yz[:,:,ii])
 
     def process_audio(self,x):
-        (aud,e) = Features.wav2aud(x,self.fs)
-        cor = Features.aud2cor(aud)
+        (aud,e) = cortical.wav2aud(x,self.fs)
+        cor = cortical.aud2cor(aud)
         #reduce time resolution
         #TODO: do this better
         cor = cor[:,:,0::5,:]

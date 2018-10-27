@@ -1,7 +1,7 @@
 import numpy as np
 from io.audiostream import AudioStream
 from io.audiostream import VirtualStream
-import features as features
+import signal.cortical as cortical
 # import wave
 # import sigproc as sigproc
 # import audioproc as audioproc
@@ -17,7 +17,7 @@ class Cortio:
         fs = stream.fs
         # TODO: precomupute deimensions
         for (ii, chunk) in enumerate(stream):
-            cor_chunk = features.wav2cor(chunk,fs)
+            cor_chunk = cortical.wav2cor(chunk,fs)
             if (ii == 0):
                 cor = cor_chunk
             else:

@@ -1,3 +1,5 @@
+## DEPRECATED
+
 import numpy as np
 import wave
 import signal.sigproc as sigproc
