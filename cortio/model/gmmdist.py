@@ -1,5 +1,5 @@
 import numpy as np
-import sigproc
+from  ..signal import sigproc as sigproc
 import sys
 
 class GMM:

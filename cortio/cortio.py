@@ -1,7 +1,7 @@
 import numpy as np
-from audiostream import AudioStream
-from audiostream import VirtualStream
-import features
+from io.audiostream import AudioStream
+from io.audiostream import VirtualStream
+import features as features
 # import wave
 # import sigproc as sigproc
 # import audioproc as audioproc

@@ -6,7 +6,7 @@ import matplotlib.pyplot as plot
 import matplotlib.animation as animation
 import mpl_toolkits.mplot3d.axes3d as axes3d
 import features as Features
-import audiostream as AudioStream
+import io.audiostream as AudioStream
 import time
 import sys
 
