@@ -1,28 +1,13 @@
-# Functions to help visualize cortical features
-
+import sys
 import numpy as np
-import math
 import matplotlib.pyplot as plot
 import matplotlib.animation as animation
 import mpl_toolkits.mplot3d.axes3d as axes3d
-import features as Features
-import io.audiostream as AudioStream
-import time
-import sys
 
-def decompose(x,fs):
-    (X,e) = Features.wav2aud(x,fs)
-    cor = Features.aud2cor(X)
-    return(X,cor)
+from ..io import audiostream as AudioStream
+from .. import features as Features
 
-def analyze(x,fs):
-    """Plot cochleogram (t x f) and cortical features (s x r x f, summed over time)"""
-    (X,cor) = decompose(x,fs)
-    audfig = plot.figure()
-    audfig.gca().imshow(X.transpose(),aspect='auto',origin='lower')
-    corfig = plot_cortical(cor)
-    return(audfig,corfig)
-
+# TODO: put this somewhere else
 def cube_marginals(cube, normalize=False):
     """Return 2D marginals for each of three dimensions of a cube of data"""
     c_fcn = np.mean if normalize else np.sum
@@ -30,64 +15,6 @@ def cube_marginals(cube, normalize=False):
     xz = c_fcn(cube, axis=1)
     yz = c_fcn(cube, axis=0)
     return(xy,xz,yz)
-
-def plot_cortical(cor,**kwargs):
-    """Plot cortical feature cube, summed over time"""
-    if cor.ndim == 4: cor = np.mean(cor,axis=2)
-    return plot_cube(cor/cor.max(),normalize=True,xlabel='scale',ylabel='rate',zlabel='freq',**kwargs)
-
-def cortical_frame_generator(cor, fig = None, win=None, **kwargs):
-    """Plot one 3D frame of a cortical feature set at a time."""
-    if cor.ndim < 4: raise "Must provide full 4-dimensions cortical feature tensor"
-    (xy,xz,yz) = cube_marginals((cor/cor.max()).transpose((0,1,3,2)))
-    n = cor.shape[2]
-    if fig == None: fig = plot.figure()
-    ax = fig.gca(projection='3d')
-    for ii in np.arange(n):
-        yield plot_cube((xy[:,:,ii],xz[:,:,ii],yz[:,:,ii]),normalize=True,xlabel='scale',ylabel='rate',zlabel='freq',ax=ax,**kwargs)
-
-def cortical_t(cor, win=None, step=1, t=5e-3, output=None, **kwargs):
-    """Animate cortical cube over time"""
-    frames = cortical_frame_generator(cor, win=win, **kwargs)
-    n = cor.shape[2]
-    for ii in np.arange(n):
-        t0 = time.time()
-        frames.next()
-        t1 = time.time()
-        if (t > t1-t0): plot.pause(t - (t1-t0))
-
-def cortical_movie(file, cor, **kwargs):
-    FFMpegWriter = animation.writers['ffmpeg']
-    metadata = dict(title='Movie Test', artist='Matplotlib',
-        comment='Movie support!')
-    writer = FFMpegWriter(fps=15, metadata=metadata)
-
-    fig = plot.figure()
-    frames = cortical_frame_generator(cor, fig=fig, **kwargs)
-#    l, = plot.plot([], [], 'k-o')
-
-#    plot.xlim(-5, 5)
-#    plot.ylim(-5, 5)
-
-#    x0,y0 = 0, 0
-
-    with writer.saving(fig, "writer_test.mp4", 100):
-        for frame in frames:
-            writer.grab_frame()
-
-        # for i in range(100):
-        #     x0 += 0.1 * np.random.randn()
-        #     y0 += 0.1 * np.random.randn()
-        #     l.set_data(x0, y0)
-        #     writer.grab_frame()
-
-    # fig = plot.figure()
-    # movie = animation.FFMpegWriter()
-    # with movie.saving(fig,file,30):
-    #     for frame in frames:
-    #         movie.grab_frame()
-
-    # return movie
 
 class CubePlot:
     """Class for handling creation of cortical cube plots, animations, and movie files"""
@@ -204,20 +131,6 @@ class CubePlot:
         self.draw_contours(xy.mean(axis=2),xz.mean(axis=2),yz.mean(axis=2))
         plot.show(block=block)
 
-    # def animate(self, **kwargs):
-    #     t = 50e-3
-    #     plot.show(block=False)
-    #     for frame in self.frames():
-    #         t0 = time.time()
-    #         self.clear_contours()
-    #         self.draw_contours(*frame)
-    #         plot.draw()
-    #         t1 = time.time()
-    #         if (t > t1-t0):
-    #             plot.pause(t - (t1-t0))
-    #         else:
-    #             sys.stderr.write("Frame took too long to render in animation!\n")
-
     def write_movie(self, filename = "cortical.mp4", **kwargs):
         if self.figure == None or not plot.fignum_exists(self.figure.number): self.setup_plot()
 
@@ -231,58 +144,3 @@ class CubePlot:
                 self.clear_contours()
                 self.draw_contours(*frame)
                 writer.grab_frame()
-
-class SquarePlot:
-    """Class for handling generation of cortical-marginal plane plots, animations, and movie files"""
-    def __init__(self):
-        pass
-
-def plot_cube(cube,x=None,y=None,z=None,normalize=False,plot_front=True, alpha=0.9,cmap=plot.cm.hot,xlabel='x',ylabel='y',zlabel='z',ax=None,block=False):
-    """Use contourf to plot cube marginals. Optionally, cube can be passed in as pre-computed marginals"""
-    if type(cube) == list or type(cube) == tuple:
-        (xy,xz,yz) = cube
-        X = xy.shape[0]
-        Y = xy.shape[1]
-        Z = xz.shape[1]
-        if xz.shape[0] != X: raise Exception("Bad shape for marginals")
-        if yz.shape[0] != Y: raise Exception("Bad shape for marginals")
-        if yz.shape[1] != Z: raise Exception("Bad shape for marginals")
-    else:
-        (xy,xz,yz) = cube_marginals(cube,normalize=normalize)
-        (X,Y,Z) = cube.shape
-    if x == None: x = np.arange(X)
-    if y == None: y = np.arange(Y)
-    if z == None: z = np.arange(Z)
-    if ax == None:
-        fig = plot.figure()
-        ax = fig.gca(projection='3d')
-    else:
-        fig = ax.figure
-        ax.cla()
-
-    # draw edge marginal surfaces
-    offsets = (Z-1,0,X-1) if plot_front else (0, Y-1, 0)
-    cset_xy = ax.contourf(x[:,None].repeat(Y,axis=1), y[None,:].repeat(X,axis=0), xy, zdir='z', offset=offsets[0], cmap=cmap, alpha=alpha)
-    cset_xz = ax.contourf(x[:,None].repeat(Z,axis=1), xz, z[None,:].repeat(X,axis=0), zdir='y', offset=offsets[1], cmap=cmap, alpha=alpha)
-    cset_yz = ax.contourf(yz, y[:,None].repeat(Z,axis=1), z[None,:].repeat(Y,axis=0), zdir='x', offset=offsets[2], cmap=cmap, alpha=alpha)
-
-    # draw wire cube to aid visualization
-    ax.plot([0,X-1,X-1,0,0],[0,0,Y-1,Y-1,0],[0,0,0,0,0],'k-')
-    ax.plot([0,X-1,X-1,0,0],[0,0,Y-1,Y-1,0],[Z-1,Z-1,Z-1,Z-1,Z-1],'k-')
-    ax.plot([0,0],[0,0],[0,Z-1],'k-')
-    ax.plot([X-1,X-1],[0,0],[0,Z-1],'k-')
-    ax.plot([X-1,X-1],[Y-1,Y-1],[0,Z-1],'k-')
-    ax.plot([0,0],[Y-1,Y-1],[0,Z-1],'k-')
-
-    ax.set_xlabel(xlabel)
-    ax.set_ylabel(ylabel)
-    ax.set_zlabel(zlabel)
-
-    # this appears to be necessary because contourf has buggy behavior when the data range is not exactly (0,1)
-    ax.set_xlim(0,X-1)
-    ax.set_ylim(0,Y-1)
-    ax.set_zlim(0,Z-1)
-
-#    plot.draw()
-
-    return (fig, cset_xy, cset_xz, cset_yz)
