@@ -6,6 +6,7 @@ import mpl_toolkits.mplot3d.axes3d as axes3d
 
 from ..io import audiostream as AudioStream
 from ..signal import cortical as cortical
+from ..cortio import Cortio
 
 # TODO: put this somewhere else
 def cube_marginals(cube, normalize=False):
@@ -42,20 +43,18 @@ class CubePlot:
             self.stream = AudioStream.VirtualStream(x,fs)
             self.fs = fs
 
-        #hacky to get the correct shape
-        self.process_audio(np.zeros(100))
+        self.set_dims()
 
     def frames(self, verbose=False):
         self.stream.rewind()
-        while not self.stream.eof():
+        cortio = Cortio(self.stream)
+        for cor in cortio.stream():
             if verbose: sys.stderr.write("Next audio chunk.\n")
-            x = self.stream.next()
-            if verbose: sys.stderr.write("Loaded %d samples.\n" % len(x))
-            self.process_audio(x)
-            if verbose: sys.stderr.write("Processed features\n")
-
-            n = self.cor.shape[2]
-            (xy,xz,yz) = self.marginals
+            cor = cor[:,:,0::5,:]
+            cor = cor/(cor.max() or 1)
+            marginals = cube_marginals(cor.transpose((0,1,3,2)),normalize=True)
+            n = cor.shape[2]
+            (xy,xz,yz) = marginals
             for ii in np.arange(n):
                 yield (xy[:,:,ii],xz[:,:,ii],yz[:,:,ii])
 
@@ -69,10 +68,15 @@ class CubePlot:
         self.cor = cor/(cor.max() or 1)
         self.marginals = cube_marginals(self.cor.transpose((0,1,3,2)),normalize=True)
         (self.nX, self.nY, self.N, self.nZ) = cor.shape
-
+        return cor
 
     def eof(self):
         return self.stream.eof()
+
+    def set_dims(self, seed = np.zeros(100)):
+        print self
+        cor = self.process_audio(seed)
+        (self.nX, self.nY, self.N, self.nZ) = cor.shape
 
     def setup_plot(self):
         if self.figure != None and plot.fignum_exists(self.figure.number): plot.close(figure)
