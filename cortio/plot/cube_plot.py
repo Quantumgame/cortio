@@ -5,7 +5,6 @@ import matplotlib.animation as animation
 import mpl_toolkits.mplot3d.axes3d as axes3d
 
 from ..io import audiostream as AudioStream
-from ..signal import cortical as cortical
 from ..cortio import Cortio
 
 # TODO: put this somewhere else
@@ -20,12 +19,6 @@ def cube_marginals(cube, normalize=False):
 class CubePlot:
     """Class for handling creation of cortical cube plots, animations, and movie files"""
     def __init__(self,x,fs=None):
-
-        self.stream = None
-        self.x = None
-        self.aud = None
-        self.cor = None
-        self.marginals = None
         self.nX = 0
         self.nY = 0
         self.nZ = 0
@@ -33,22 +26,18 @@ class CubePlot:
         self.contours = {}
         self.figure = None
         self.axes = None
-        self.fs = None
 
         if type(x) == str:
             self.stream = AudioStream.AudioStream(x)
-            self.fs = self.stream.fs
         else:
             if fs == None: raise Exception, "Must provide sample frequency for audio"
             self.stream = AudioStream.VirtualStream(x,fs)
-            self.fs = fs
-
-        self.set_dims()
+        self.cortio = Cortio(self.stream)
+        (self.nX, self.nY, self.N, self.nZ) = self.cortio.shape()
 
     def frames(self, verbose=False):
-        self.stream.rewind()
-        cortio = Cortio(self.stream)
-        for cor in cortio.stream():
+        self.cortio.rewind()
+        for cor in self.cortio.stream():
             if verbose: sys.stderr.write("Next audio chunk.\n")
             cor = cor[:,:,0::5,:]
             cor = cor/(cor.max() or 1)
@@ -58,25 +47,8 @@ class CubePlot:
             for ii in np.arange(n):
                 yield (xy[:,:,ii],xz[:,:,ii],yz[:,:,ii])
 
-    def process_audio(self,x):
-        (aud,e) = cortical.wav2aud(x,self.fs)
-        cor = cortical.aud2cor(aud)
-        #reduce time resolution
-        #TODO: do this better
-        cor = cor[:,:,0::5,:]
-        self.aud = aud
-        self.cor = cor/(cor.max() or 1)
-        self.marginals = cube_marginals(self.cor.transpose((0,1,3,2)),normalize=True)
-        (self.nX, self.nY, self.N, self.nZ) = cor.shape
-        return cor
-
     def eof(self):
         return self.stream.eof()
-
-    def set_dims(self, seed = np.zeros(100)):
-        print self
-        cor = self.process_audio(seed)
-        (self.nX, self.nY, self.N, self.nZ) = cor.shape
 
     def setup_plot(self):
         if self.figure != None and plot.fignum_exists(self.figure.number): plot.close(figure)
@@ -128,12 +100,6 @@ class CubePlot:
         for plane in self.contours:
             for col in self.axes.collections: #self.contours[plane].collections:
                 self.axes.collections.remove(col)
-
-    def plot(self,**kwargs):
-        block = kwargs.pop('block') if kwargs.has_key('block') else False
-        (xy,xz,yz) = self.marginals
-        self.draw_contours(xy.mean(axis=2),xz.mean(axis=2),yz.mean(axis=2))
-        plot.show(block=block)
 
     def write_movie(self, filename = "cortical.mp4", **kwargs):
         if self.figure == None or not plot.fignum_exists(self.figure.number): self.setup_plot()
