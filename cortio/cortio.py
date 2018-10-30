@@ -38,6 +38,13 @@ class Cortio:
         self.settings = settings
         self.fs = self.audio_streamer.fs
 
+    def shape(self):
+        """Returns shape of cortical slice based on filter settings"""
+        # This is a tacky-hacky but gets the job done for now
+        # TODO: compute shape directly from filter settings
+        seed = np.zeros(100)
+        return cortical.wav2cor(seed, self.fs).shape
+
     def stream(self):
         while not self.audio_streamer.eof():
             yield cortical.wav2cor(
@@ -52,6 +59,9 @@ class Cortio:
             else:
                 cor = np.append(cor, cor_chunk, 3)
         return cor
+
+    def rewind(self):
+        self.audio_streamer.rewind()
 
 # TODO script execution:
 #      take input file, write output in some format to file
