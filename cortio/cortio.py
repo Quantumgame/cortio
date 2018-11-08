@@ -54,6 +54,7 @@ class Cortio:
         self.cortex = Cortex(settings)
         self.settings = settings
         self.fs = self.audio_streamer.fs
+        self._validate()
 
     def shape(self):
         """Returns shape of cortical slice based on filter settings"""
@@ -79,6 +80,9 @@ class Cortio:
 
     def rewind(self):
         self.audio_streamer.rewind()
+
+    def _validate(self):
+        if self.audio_streamer.info['channels'] != 1: raise Exception, "{} channel audio not supported".format(self.audio_streamer.info['channels'])
 
 # TODO script execution:
 #      take input file, write output in some format to file
