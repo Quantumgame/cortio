@@ -2,7 +2,7 @@
 
 import numpy as np
 import wave
-import signal.sigproc as sigproc
+import signal.dsp as dsp
 import signal.audioproc as audioproc
 import signal.cortical as cortical
 import model.gmmdist as gmmdist
@@ -68,8 +68,8 @@ def cor_moments(cor):
     features = np.zeros((NT,num_marginals*3))
     for ii, dim in enumerate([1,2,3]):
         # take marginal in dim & time(0)
-        marginal = sigproc.marginal(cor,[0,dim])
-        moments = sigproc.moments(marginal, num=4, dim=1, keepdims=True)
+        marginal = dsp.marginal(cor,[0,dim])
+        moments = dsp.moments(marginal, num=4, dim=1, keepdims=True)
         moments[np.isnan(moments)] = 0
         features[:,(0+ii*num_marginals):(num_marginals+ii*num_marginals)] = moments
     return features

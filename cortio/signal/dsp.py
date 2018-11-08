@@ -1,8 +1,3 @@
-# This file includes routines for basic audio signal processing including framing and computing power spectra.
-# Contributors:
-# - James Lyons 2012
-# - Andrew Schwartz 2014
-
 import numpy as np
 import scipy as sp
 import math

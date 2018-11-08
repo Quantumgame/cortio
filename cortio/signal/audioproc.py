@@ -4,7 +4,7 @@
 # - Andrew Schwartz 2014
 
 import numpy as np
-import sigproc
+import dsp
 
 def preemphasis(signal,coeff=0.95):
     """perform preemphasis on the input signal.
@@ -80,8 +80,8 @@ def fbank(signal,samplerate=16000,winlen=0.025,winstep=0.01,
     """
     highfreq= highfreq or samplerate/2
     signal = preemphasis(signal,preemph)
-    frames = sigproc.framesig(signal, winlen*samplerate, winstep*samplerate)
-    pspec = sigproc.powspec(frames,nfft)
+    frames = dsp.framesig(signal, winlen*samplerate, winstep*samplerate)
+    pspec = dsp.powspec(frames,nfft)
     energy = np.sum(pspec,1) # this stores the total energy in each frame
 
     fb = get_filterbanks(nfilt,nfft,samplerate)
@@ -144,8 +144,8 @@ def ssc(signal,samplerate=16000,winlen=0.025,winstep=0.01,
     """
     highfreq= highfreq or samplerate//2
     signal = preemphasis(signal,preemph)
-    frames = sigproc.framesig(signal, winlen*samplerate, winstep*samplerate)
-    pspec = sigproc.powspec(frames,nfft)
+    frames = dsp.framesig(signal, winlen*samplerate, winstep*samplerate)
+    pspec = dsp.powspec(frames,nfft)
 
     fb = get_filterbanks(nfilt,nfft,samplerate)
     feat = np.dot(pspec,fb.T) # compute the filterbank energies

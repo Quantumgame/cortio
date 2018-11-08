@@ -1,5 +1,5 @@
 import numpy as np
-from  ..signal import sigproc as sigproc
+from  ..signal import dsp as dsp
 import sys
 
 class GMM:
@@ -35,7 +35,7 @@ class GMM:
 
         d = d/d.sum()
         d_axes = tuple(range(d.ndim))
-        b = sigproc.index_coordinate_matrix(d.shape).astype(np.float)
+        b = dsp.index_coordinate_matrix(d.shape).astype(np.float)
         self.init_EM(d)
 
         for nn in range(n_iter):
@@ -63,7 +63,7 @@ class GMM:
                 #TODO: test this; just fixed up the code to make it work with an earlier version of python
                 # collapse_axes = tuple(set(d_axes) - {ii})
                 # rwd = (w * d[...,None]).sum(axis=collapse_axes)
-                rwd = sigproc.marginal(w * d[...,None], ii)
+                rwd = dsp.marginal(w * d[...,None], ii)
 
                 rwd = rwd / rwd.sum(0)
                 rb = np.arange(d.shape[ii])[:,None]
@@ -99,7 +99,7 @@ class GMM:
         covars = np.array(covars).astype(np.float)
         weights = np.array(weights).astype(np.float)
 
-        b = sigproc.index_coordinate_matrix(shape).astype(np.float)
+        b = dsp.index_coordinate_matrix(shape).astype(np.float)
         return (_mv_gaussian_diag(b,means,covars) * weights).sum(-1)
 
 #########################################################################
