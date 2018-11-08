@@ -2,7 +2,7 @@ import numpy as np
 from io.audiostream import AudioStream
 from io.audiostream import VirtualStream
 import signal.cortical as cortical
-from instance.filter_settings import FilterSettings
+from model.filter_settings import FilterSettings
 
 class Cortio:
     """Transform audio into cortical feature representation"""
