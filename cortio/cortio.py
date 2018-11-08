@@ -18,7 +18,7 @@ class Cortio:
     Use the various static methods to do this (e.g. Cortio.stream_file).
     Creating a new Cortio() using the class constructor requires passing in
     an AudioStream or VirtualStream object.
-    
+
     Use the `stream` method to obtain a generator for frames of cortical
     features, or `gulp` to generate the entire (remaining) 4-D vector.
     """
@@ -26,27 +26,27 @@ class Cortio:
     @staticmethod
     def transform_audio(audio, fs, settings = FilterSettings()):
         """Transform full audio waveform into cortical representation"""
-        stream = VirtualStream(audio, fs)
+        stream = VirtualStream(audio, fs, chunk_size=settings.chunk_size)
         cortio = Cortio(stream, settings)
         return cortio.gulp()
 
     @staticmethod
     def transform_file(filepath, settings = FilterSettings()):
         """Transform full audio file into cortical representation"""
-        stream = AudioStream(filepath)
+        stream = AudioStream(filepath, chunk_size=settings.chunk_size)
         cortio = Cortio(stream, settings)
         return cortio.gulp()
 
     @staticmethod
     def stream_audio(audio, fs, settings = FilterSettings()):
         """Generate a Cortio instance from an audio vector"""
-        stream = VirtualStream(audio, fs)
+        stream = VirtualStream(audio, fs, chunk_size=settings.chunk_size)
         return Cortio(stream, settings)
 
     @staticmethod
     def stream_file(filepath, settings = FilterSettings()):
         """Generate a Cortio instance from an audio file"""
-        stream = AudioStream(filepath)
+        stream = AudioStream(filepath, chunk_size=settings.chunk_size)
         return Cortio(stream, settings)
 
     def __init__(self, audio_streamer, settings = FilterSettings()):
