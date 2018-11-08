@@ -5,7 +5,8 @@ import wave
 
 from ..signal import distribution
 from ..signal import audio
-from ..signal import cortical
+from ..signal import
+from ..model import cortex.Cortex as Cortex
 import gmmdist
 
 def compute_features(chunk,fs,features='cortical',method='moments'):
@@ -18,6 +19,7 @@ def compute_features(chunk,fs,features='cortical',method='moments'):
         # feat = np.concatenate((f,d,dd),axis=1)
         # return(feat)
     elif features=='cortical':
+        cortex = Cortex()
         # convert to specgram
         (X,energy) = wav2aud(chunk,fs)
         # filter specgram to cortical
@@ -56,7 +58,7 @@ def wav2aud(wav, fs):
     return(X,energy)
 
 def aud2cor(aud, fl=10, bp=1):
-    cor = cortical.filter(aud,BP=bp,fl=fl)
+    cor = cortex.filter(aud,BP=bp,fl=fl)
     #collapse +/- rates
     nr = cor.shape[1]
     cor = np.abs(cor[:,0:nr/2,:,:]) + np.abs(cor[:,nr/2:nr,:,:])

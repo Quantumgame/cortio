@@ -1,7 +1,7 @@
 import numpy as np
 from io.audiostream import AudioStream
 from io.audiostream import VirtualStream
-import signal.cortical as cortical
+from model.cortex import Cortex
 from model.filter_settings import FilterSettings
 
 class Cortio:
@@ -31,6 +31,7 @@ class Cortio:
 
     def __init__(self, audio_streamer, settings = FilterSettings()):
         self.audio_streamer = audio_streamer
+        self.cortex = Cortex(settings)
         self.settings = settings
         self.fs = self.audio_streamer.fs
 
@@ -39,11 +40,11 @@ class Cortio:
         # This is a tacky-hacky but gets the job done for now
         # TODO: compute shape directly from filter settings
         seed = np.zeros(100)
-        return cortical.wav2cor(seed, self.fs).shape
+        return self.cortex.wav2cor(seed, self.fs).shape
 
     def stream(self):
         while not self.audio_streamer.eof():
-            yield cortical.wav2cor(
+            yield self.cortex.wav2cor(
                     self.audio_streamer.next(),
                     self.fs)
 
