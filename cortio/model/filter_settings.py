@@ -1,4 +1,21 @@
 class FilterSettings:
+    """Settings for cortical filter
+    chunk_size : size of audio chunks to analyze
+    nfft     : num points for DFT
+    nfilt    : number of frequency filters
+    winlen   : length of analysis window
+    winstep  : time between analysis window starts
+    highfreq : highest frequency to include (None for Nyquist)
+    preemph  : preemphasis constant
+    logfloor : floor for log operations (avoid/bound -Inf)
+    fl       : frame length in ms
+    full_T   : fullnss of temporal margin, between [0,1]
+    full_X   : fullness of spectral margin, between [0,1]
+    bandpass : pure bandpass indicator
+    rates    : rate vector in Hz, e.g., 2.^(1:.5:5).
+    scales   : scale vector in cyc/oct, e.g., 2.^(-2:.5:3)
+    """
+
     # TODO rename and document these params
     def __init__(self,
             chunk_size = 30.0,
@@ -13,12 +30,9 @@ class FilterSettings:
             rates=[1, 2, 4, 8, 16, 32],
             scales=[0.5, 1, 2, 4, 8],
             fl=10,
-            tc=8,
-            fac=-2,
-            shift=0,
             full_T=0,
             full_X=0,
-            BP=1
+            bandpass=1
             ):
         self.chunk_size = chunk_size
         self.winlen = winlen
@@ -32,9 +46,6 @@ class FilterSettings:
         self.rates = rates
         self.scales = scales
         self.fl = fl
-        self.tc = tc
-        self.fac = fac
-        self.shift = shift
         self.full_T = full_T
         self.full_X = full_X
-        self.BP = BP
+        self.bandpass = bandpass

@@ -39,18 +39,6 @@ class Cortex:
     def filter(self, specgram):
         """
         AUD2COR (forward) cortical rate-scale representation
-        cr = aud2cor(y, para1, rv, sv, fname, DISP);
-        cr    : cortical representation (4D, scale-rate(up-down)-time-freq.)
-        y    : auditory spectrogram, N-by-M, where
-        N = # of samples, M = # of channels
-        para1 = [paras FULLT FULLX BP]
-        paras    : [frmlen, tc, fac, shft] => frame length, time const, non-linear factor, fs octave shift
-        FULLT (FULLX): fullness of temporal (spectral) margin. The value can
-        be any real number within [0, 1]. If only one number was
-        assigned, FULLT = FULLX will be set to the same value.
-        BP    : pure bandpass indicator
-        rv    : rate vector in Hz, e.g., 2.^(1:.5:5).
-        sv    : scale vector in cyc/oct, e.g., 2.^(-2:.5:3).
 
         AUD2COR implements the 2-D wavelet transform
         possibly executed by the A1 cortex. The auditory
@@ -99,7 +87,7 @@ class Cortex:
         for rdx in range(K1):
             # rate filtering
             fc_rt = self.filter_settings.rates[rdx]
-            HR = self.temporal_filter(fc_rt, N1, STF, [1+rdx+self.filter_settings.BP, K1+self.filter_settings.BP*2])
+            HR = self.temporal_filter(fc_rt, N1, STF, [1+rdx+self.filter_settings.bandpass, K1+self.filter_settings.bandpass*2])
 
             for sgn in (1, -1):
                 # rate filtering modification
@@ -118,7 +106,7 @@ class Cortex:
                 for sdx in range(K2):
                     # scale filtering
                     fc_sc = self.filter_settings.scales[sdx]
-                    HS = self.frequency_filter(fc_sc, M1, SRF, [1+sdx+self.filter_settings.BP, K2+self.filter_settings.BP*2])
+                    HS = self.frequency_filter(fc_sc, M1, SRF, [1+sdx+self.filter_settings.bandpass, K2+self.filter_settings.bandpass*2])
 
                     # second inverse fft (w.r.t frequency axis)
                     z[ndx,:] = np.fft.ifft(z1*HS,axis=1,n=M2)[ndx[:,None],mdx1]
