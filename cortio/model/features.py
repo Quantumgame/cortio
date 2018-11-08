@@ -3,17 +3,17 @@
 import numpy as np
 import wave
 import signal.dsp as dsp
-import signal.audioproc as audioproc
+import signal.audio as audio
 import signal.cortical as cortical
 import model.gmmdist as gmmdist
 
 def compute_features(chunk,fs,features='cortical',method='moments'):
     if features=='mfcc':
         raise "NIY: requires newer version of scipy.fftpack"
-        # f = audioproc.mfcc(chunk)
+        # f = audio.mfcc(chunk)
         # f[f[:,0] < -320] = -320
-        # d = audioproc.deltas(f)
-        # dd = audioproc.deltas(d)
+        # d = audio.deltas(f)
+        # dd = audio.deltas(d)
         # feat = np.concatenate((f,d,dd),axis=1)
         # return(feat)
     elif features=='cortical':
@@ -28,8 +28,8 @@ def compute_features(chunk,fs,features='cortical',method='moments'):
             f = cor_moments(cor)
         #compute deltas
         f[np.isnan(f)] = 0
-        d = audioproc.deltas(f)
-        dd = audioproc.deltas(d)
+        d = audio.deltas(f)
+        dd = audio.deltas(d)
         e = energy[:,None]
         #concatenate all features
         feat = np.concatenate((e,f,d,dd),axis=1)
@@ -41,7 +41,7 @@ def wav2cor(wav,fs):
     return aud2cor(wav2aud(wav,fs)[0])
 
 def wav2aud(wav, fs):
-    (X, energy) = audioproc.db_fbank(wav,samplerate=fs,nfilt=128, nfft=1024,winstep=0.01,winlen=0.025)
+    (X, energy) = audio.db_fbank(wav,samplerate=fs,nfilt=128, nfft=1024,winstep=0.01,winlen=0.025)
     # offset to set 0 to mean nothing
     X = X + 150
     X[X<0] = 0

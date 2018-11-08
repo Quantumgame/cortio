@@ -1,11 +1,11 @@
 import numpy as np
-import audioproc
+import audio
 
 def wav2cor(wav,fs):
     return aud2cor(wav2aud(wav,fs)[0])
 
 def wav2aud(wav, fs):
-    (X, energy) = audioproc.db_fbank(wav,samplerate=fs,nfilt=128, nfft=1024,winstep=0.01,winlen=0.025)
+    (X, energy) = audio.db_fbank(wav,samplerate=fs,nfilt=128, nfft=1024,winstep=0.01,winlen=0.025)
     # offset to set 0 to mean nothing
     X = X + 150
     X[X<0] = 0

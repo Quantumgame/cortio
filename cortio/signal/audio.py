@@ -1,8 +1,3 @@
-# calculate filterbank features. Provides e.g. fbank and mfcc features for use in ASR applications
-# Contributors:
-# - James Lyons 2012
-# - Andrew Schwartz 2014
-
 import numpy as np
 import dsp
 
