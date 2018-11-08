@@ -5,27 +5,47 @@ from model.cortex import Cortex
 from model.filter_settings import FilterSettings
 
 class Cortio:
-    """Transform audio into cortical feature representation"""
+    """Transform audio into cortical feature representation.
+
+    The cortical representation of audio is modeled after A1 auditory cortex
+    and is a 4-D vector: scale x rate x time x freq.
+    scale: periodicity in the freq domain of the STFT (harmonicity).
+    rate: periodicity in the time domain of the STFT (rhythm).
+    time: can't stop it.
+    freq: preiodicity in the time-domain of the waveform.
+
+    A Cortio instance can be generated from an audio vector or file.
+    Use the various static methods to do this (e.g. Cortio.stream_file).
+    Creating a new Cortio() using the class constructor requires passing in
+    an AudioStream or VirtualStream object.
+    
+    Use the `stream` method to obtain a generator for frames of cortical
+    features, or `gulp` to generate the entire (remaining) 4-D vector.
+    """
 
     @staticmethod
     def transform_audio(audio, fs, settings = FilterSettings()):
+        """Transform full audio waveform into cortical representation"""
         stream = VirtualStream(audio, fs)
         cortio = Cortio(stream, settings)
         return cortio.gulp()
 
     @staticmethod
     def transform_file(filepath, settings = FilterSettings()):
+        """Transform full audio file into cortical representation"""
         stream = AudioStream(filepath)
         cortio = Cortio(stream, settings)
         return cortio.gulp()
 
     @staticmethod
     def stream_audio(audio, fs, settings = FilterSettings()):
+        """Generate a Cortio instance from an audio vector"""
         stream = VirtualStream(audio, fs)
         return Cortio(stream, settings)
 
     @staticmethod
     def stream_file(filepath, settings = FilterSettings()):
+        """Generate a Cortio instance from an audio file"""
         stream = AudioStream(filepath)
         return Cortio(stream, settings)
 
