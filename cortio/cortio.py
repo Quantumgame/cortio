@@ -14,40 +14,41 @@ class Cortio:
     time: can't stop it.
     freq: preiodicity in the time-domain of the waveform.
 
-    A Cortio instance can be generated from an audio vector or file.
-    Use the various static methods to do this (e.g. Cortio.stream_file).
-    Creating a new Cortio() using the class constructor requires passing in
-    an AudioStream or VirtualStream object.
+    Use factory methods Cortio.from_file and Cortio.from_vector to create
+    a new instance of a Cortio object. Using the class constructor requires
+    passing in an AudioStream or VirtualStream object.
 
-    Use the `stream` method to obtain a generator for frames of cortical
+    Use `Cortio#stream` to obtain a generator for frames of cortical
     features, or `gulp` to generate the entire (remaining) 4-D vector.
+
+    Use Cortio.transform_file or Cortio.transform_audio to directly output
+    the transformation without handling a Cortio instance.
     """
 
     @staticmethod
-    def transform_audio(audio, fs, settings = FilterSettings()):
-        """Transform full audio waveform into cortical representation"""
-        stream = VirtualStream(audio, fs, chunk_size=settings.chunk_size)
-        cortio = Cortio(stream, settings)
-        return cortio.gulp()
-
-    @staticmethod
-    def transform_file(filepath, settings = FilterSettings()):
-        """Transform full audio file into cortical representation"""
-        stream = AudioStream(filepath, chunk_size=settings.chunk_size)
-        cortio = Cortio(stream, settings)
-        return cortio.gulp()
-
-    @staticmethod
-    def stream_audio(audio, fs, settings = FilterSettings()):
-        """Generate a Cortio instance from an audio vector"""
+    def from_vector(audio, fs, settings = FilterSettings()):
+        """Create Cortio instance from audio vector"""
         stream = VirtualStream(audio, fs, chunk_size=settings.chunk_size)
         return Cortio(stream, settings)
 
     @staticmethod
-    def stream_file(filepath, settings = FilterSettings()):
-        """Generate a Cortio instance from an audio file"""
+    def from_file(filepath, settings = FilterSettings()):
+        """Create Cortio instance from audio file"""
         stream = AudioStream(filepath, chunk_size=settings.chunk_size)
         return Cortio(stream, settings)
+
+    @staticmethod
+    def transform_vector(audio, fs, settings = FilterSettings()):
+        """Transform audio vector into cortical representation"""
+        cortio = Cortio.from_vector(audio, fs, settings)
+        return cortio.gulp()
+
+    @staticmethod
+    def transform_file(input_file, output_file, settings = FilterSettings(), format = 'npy'):
+        """Transform audio file into cortical representation, write to output file"""
+        cortio = Cortio.from_file(input_file, settings)
+        cor = cortio.gulp()
+        np.save(output_file, cor)
 
     def __init__(self, audio_streamer, settings = FilterSettings()):
         self.audio_streamer = audio_streamer

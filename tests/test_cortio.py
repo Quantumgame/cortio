@@ -5,7 +5,8 @@ from cortio import Cortio
 
 class TestCortio(unittest.TestCase):
     def test_signal_1(self):
-        x = Cortio.transform_file('data/speech1.wav')
+        cortio = Cortio.from_file('data/speech1.wav')
+        x = cortio.gulp()
         y = np.load('tests/fixtures/speech1-crt.npy')
         mse = np.mean((x - y) ** 2)
         self.assertTrue(mse < 1e-12)
