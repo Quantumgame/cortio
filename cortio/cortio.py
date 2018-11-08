@@ -3,10 +3,6 @@ from io.audiostream import AudioStream
 from io.audiostream import VirtualStream
 import signal.cortical as cortical
 from instance.filter_settings import FilterSettings
-# import wave
-# import sigproc as sigproc
-# import audioproc as audioproc
-# import cortical as cortical
 
 class Cortio:
     """Transform audio into cortical feature representation"""
