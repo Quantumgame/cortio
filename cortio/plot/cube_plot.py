@@ -6,15 +6,7 @@ import mpl_toolkits.mplot3d.axes3d as axes3d
 
 from ..io import audiostream as AudioStream
 from ..cortio import Cortio
-
-# TODO: put this somewhere else
-def cube_marginals(cube, normalize=False):
-    """Return 2D marginals for each of three dimensions of a cube of data"""
-    c_fcn = np.mean if normalize else np.sum
-    xy = c_fcn(cube, axis=2)
-    xz = c_fcn(cube, axis=1)
-    yz = c_fcn(cube, axis=0)
-    return(xy,xz,yz)
+from ..signal import distribution
 
 class CubePlot:
     """Class for handling creation of cortical cube plots, animations, and movie files"""
@@ -41,7 +33,7 @@ class CubePlot:
             if verbose: sys.stderr.write("Next audio chunk.\n")
             cor = cor[:,:,0::5,:]
             cor = cor/(cor.max() or 1)
-            marginals = cube_marginals(cor.transpose((0,1,3,2)),normalize=True)
+            marginals = distribution.cube_marginals(cor.transpose((0,1,3,2)),normalize=True)
             n = cor.shape[2]
             (xy,xz,yz) = marginals
             for ii in np.arange(n):

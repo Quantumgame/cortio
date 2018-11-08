@@ -15,6 +15,14 @@ def marginal(data, dim):
         m = m.sum(axis=d)
     return m
 
+def cube_marginals(cube, normalize=False):
+    """Return 2D marginals for each of three dimensions of a cube of data"""
+    c_fcn = np.mean if normalize else np.sum
+    xy = c_fcn(cube, axis=2)
+    xz = c_fcn(cube, axis=1)
+    yz = c_fcn(cube, axis=0)
+    return(xy,xz,yz)
+
 def moments(data, num, dim=0, normalized=False,keepdims=False):
     """Compute up to the num-th moment of the distribution data along specified axis (default 0)"""
     # to make things easier, swap dim into position 0 here, then swap it back if keepDims is True
