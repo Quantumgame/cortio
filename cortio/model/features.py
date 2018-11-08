@@ -2,10 +2,11 @@
 
 import numpy as np
 import wave
-import signal.dsp as dsp
-import signal.audio as audio
-import signal.cortical as cortical
-import model.gmmdist as gmmdist
+
+from ..signal import distribution
+from ..signal import audio
+from ..signal import cortical
+import gmmdist
 
 def compute_features(chunk,fs,features='cortical',method='moments'):
     if features=='mfcc':
@@ -68,8 +69,8 @@ def cor_moments(cor):
     features = np.zeros((NT,num_marginals*3))
     for ii, dim in enumerate([1,2,3]):
         # take marginal in dim & time(0)
-        marginal = dsp.marginal(cor,[0,dim])
-        moments = dsp.moments(marginal, num=4, dim=1, keepdims=True)
+        marginal = distribution.marginal(cor,[0,dim])
+        moments = distribution.moments(marginal, num=4, dim=1, keepdims=True)
         moments[np.isnan(moments)] = 0
         features[:,(0+ii*num_marginals):(num_marginals+ii*num_marginals)] = moments
     return features
