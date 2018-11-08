@@ -4,21 +4,21 @@ class FilterSettings:
             chunk_size = 30.0,
             winlen=0.025,
             winstep=0.01,
-            nfilt=26,
-            nfft=512,
+            nfilt=128,
+            nfft=1024,
             lowfreq=0,
             highfreq=None,
             preemph=0.97,
             logfloor = 1e-16,
             rates=[1, 2, 4, 8, 16, 32],
             scales=[0.5, 1, 2, 4, 8],
-            fl=8,
+            fl=10,
             tc=8,
             fac=-2,
             shift=0,
             full_T=0,
             full_X=0,
-            BP=0
+            BP=1
             ):
         self.chunk_size = chunk_size
         self.winlen = winlen
