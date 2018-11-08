@@ -18,5 +18,5 @@ cp.write_movie('$output')
 PROGRAM
 
 mv $output $output.tmp
-ffmpeg -i $output.tmp -i $input -map 0:v -map 1:a $output
+ffmpeg -i $output.tmp -i $input -c:v copy -map 0:v -map 1:a $output
 rm $output.tmp
