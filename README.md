@@ -10,6 +10,10 @@ Here, "scale" refers to the structure in the frequency transform (that is, a Fou
 
 NOTE: Cortio currently ONLY supports 1-channel, 16kHz audio in PCM format. I'm working on it. Patience.
 
+## Visualizing the features
+
+![Cortio plot](doc/music.png)
+
 To see a demo of the features produced, use the `cortical_movie` script to generate a video visualization of the computed features:
 
 ```bash
