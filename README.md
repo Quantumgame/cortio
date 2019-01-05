@@ -71,3 +71,11 @@ y = Cortio.transform_file(file)
 ```
 
 Both of these methods also support passing in a `cortio.FilterSettings` instance. Both of these methods are as memory-expensive as you audio is large. Tread carefully. Coming sometime: streaming implementation of `transform_file` that uses the file system instead of memory for large transformation. Patience. Or pull requests!
+
+## Development
+
+Cortio uses [pipenv](pytest-benchmark). Install dependencies by following instructions there to install pipenv, then
+
+`pipenv install`
+
+For more, see [the basics](https://pipenv.readthedocs.io/en/latest/basics/)
